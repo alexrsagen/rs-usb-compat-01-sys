@@ -19,4 +19,4 @@ usb-compat-01-sys = "0.1"
 
 Import the `usb_compat_01_sys` crate in your project, then you can use all functions starting with `usb_` from `libusb-compat-0.1`.
 
-See the [`libusb-compat-0.1` wiki](https://github.com/libusb/libusb-compat-0.1/wiki) or [`libusb-compat-0.1` 1.8.0 examples](https://github.com/libusb/libusb-compat-0.1/tree/v0.1.7/examples) for information on how to use it. The API is the same, as this is just a binding.
+See the [`libusb-compat-0.1` wiki](https://github.com/libusb/libusb-compat-0.1/wiki) or [`libusb-compat-0.1` examples](https://github.com/libusb/libusb-compat-0.1/tree/v0.1.7/examples) for information on how to use it. The API is the same, as this is just a binding.
