@@ -46,7 +46,7 @@ fn main() {
 	fs::File::create(&include_dir.join("config.h")).unwrap();
 	let mut base_config = cc::Build::new();
 	base_config.include(&usb1_include_dir);
-	base_config.object(&usb1_include_dir.parent().unwrap().join("usb.lib"));
+	base_config.object(&usb1_include_dir.parent().unwrap().join("libusb.a"));
 	base_config.include(&include_dir);
 	base_config.include(&usb01_dir);
 
@@ -111,9 +111,6 @@ fn main() {
     println!("cargo:static=1");
 	println!("cargo:include={}", include_dir.display());
 	println!("cargo:version_number={}", VERSION);
-	println!("cargo:rustc-link-lib=static=usb");
-	println!("cargo:rustc-link-lib=dylib=usb");
-	println!("cargo:rustc-link-search=native={}", out_dir.display());
 
 	// Generate libusb-compat-0.1 bindings
 	let bindings = Builder::default()

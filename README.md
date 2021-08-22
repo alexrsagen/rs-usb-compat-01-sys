@@ -14,7 +14,7 @@ In summary, it provides:
 Add `usb-compat-01-sys` as a dependency in your project's `Cargo.toml` file:
 ```toml
 [dependencies]
-usb-compat-01-sys = "0.1"
+usb-compat-01-sys = "0.2"
 ```
 
 Import the `usb_compat_01_sys` crate in your project, then you can use all functions starting with `usb_` from `libusb-compat-0.1`.
