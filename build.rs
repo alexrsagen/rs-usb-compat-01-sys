@@ -53,6 +53,8 @@ fn main() {
 	base_config.define("PRINTF_FORMAT(a, b)", Some(""));
 	base_config.define("ENABLE_LOGGING", Some("1"));
 
+    base_config.flag("-Wno-pointer-sign");
+
 	if std::env::var("CARGO_CFG_TARGET_OS") == Ok("macos".into()) {
 		base_config.define("OS_DARWIN", Some("1"));
 		link_framework("CoreFoundation");
@@ -93,7 +95,7 @@ fn main() {
 		#[cfg(target_env = "msvc")]
 		base_config.flag("/source-charset:utf-8");
 
-		base_config.warnings(false);
+        base_config.warnings(false);
 		base_config.define("OS_WINDOWS", Some("1"));
 
 		base_config.define("DEFAULT_VISIBILITY", Some(""));
