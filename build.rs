@@ -4,7 +4,7 @@ extern crate pkg_config;
 
 use bindgen::Builder;
 use std::{env, fs};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 static VERSION: &'static str = "0.1.7";
 
@@ -46,7 +46,10 @@ fn main() {
 	fs::File::create(&include_dir.join("config.h")).unwrap();
 	let mut base_config = cc::Build::new();
 	base_config.include(&usb1_include_dir);
-	base_config.object(&usb1_include_dir.parent().unwrap().join("libusb.a"));
+    let libusbobj = usb1_include_dir.parent().unwrap().join("libusb.a");
+    if Path::new(&libusbobj).is_file(){
+	    base_config.object(libusbobj);
+    }
 	base_config.include(&include_dir);
 	base_config.include(&usb01_dir);
 
