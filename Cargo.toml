@@ -10,7 +10,7 @@ edition = "2018"
 links = "usb-0.1"
 
 [dependencies]
-libusb1-sys = { version = "0.5", features = ["vendored"], path = "../rusb/libusb1-sys" }
+libusb1-sys = { version = "0.5", features = ["vendored"] }
 
 [build-dependencies]
 cc = "1.0"
