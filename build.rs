@@ -8,23 +8,6 @@ use std::path::PathBuf;
 
 static VERSION: &'static str = "0.1.7";
 
-fn link(name: &str, bundled: bool) {
-    use std::env::var;
-    let target = var("TARGET").unwrap();
-    let target: Vec<_> = target.split('-').collect();
-    if target.get(2) == Some(&"windows") {
-        println!("cargo:rustc-link-lib=dylib={}", name);
-        if bundled && target.get(3) == Some(&"gnu") {
-            let dir = var("CARGO_MANIFEST_DIR").unwrap();
-            println!("cargo:rustc-link-search=native={}/{}", dir, target[0]);
-        }
-    }
-}
-
-fn link_framework(name: &str) {
-    println!("cargo:rustc-link-lib=framework={}", name);
-}
-
 fn main() {
 	let usb1_include_dir = PathBuf::from(env::var("DEP_USB_1.0_INCLUDE").expect("libusb1-sys did not export DEP_USB_1.0_INCLUDE"));
 	let vendor_dir = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR var not set")).join("vendor");
@@ -55,9 +38,6 @@ fn main() {
 
 	if std::env::var("CARGO_CFG_TARGET_OS") == Ok("macos".into()) {
 		base_config.define("OS_DARWIN", Some("1"));
-		link_framework("CoreFoundation");
-		link_framework("IOKit");
-		link("objc", false);
 	}
 
 	if std::env::var("CARGO_CFG_TARGET_OS") == Ok("linux".into())
@@ -98,7 +78,6 @@ fn main() {
 
 		base_config.define("DEFAULT_VISIBILITY", Some(""));
 		base_config.define("PLATFORM_WINDOWS", Some("1"));
-		link("user32", false);
 	}
 
 	base_config.file(usb01_dir.join("core.c"));
@@ -111,18 +90,24 @@ fn main() {
     println!("cargo:static=1");
 	println!("cargo:include={}", include_dir.display());
 	println!("cargo:version_number={}", VERSION);
+	if std::env::var("CARGO_CFG_TARGET_OS") == Ok("macos".into()) {
+		println!("cargo:rustc-link-lib=framework=CoreFoundation");
+		println!("cargo:rustc-link-lib=framework=IOKit");
+		println!("cargo:rustc-link-lib=objc");
+	}
+	if std::env::var("CARGO_CFG_TARGET_FAMILY") == Ok("unix".into()) && pkg_config::probe_library("libudev").is_ok() {
+		println!("cargo:rustc-link-lib=udev");
+	}
 
 	// Generate libusb-compat-0.1 bindings
-	let bindings = Builder::default()
+	Builder::default()
 		.header(include_dir.join("usb.h").to_str().unwrap())
 		.clang_arg(format!("-I{}", include_dir.display()))
 		.allowlist_function("usb_.*")
 		.allowlist_type("usb_.*")
 		.allowlist_var("USB_.*")
 		.generate()
-		.expect("Unable to generate usb bindings");
-
-	bindings
+		.expect("Unable to generate usb bindings")
 		.write_to_file(out_dir.join("bindings.rs"))
 		.expect("Unable to write usb bindings");
 }
