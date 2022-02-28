@@ -1,7 +1,7 @@
 # usb-compat-01-sys
 [![Crates.io](https://img.shields.io/crates/v/usb-compat-01-sys)](https://crates.io/crates/usb-compat-01-sys)
 
-**Warning:** If you just need to use libusb, you might be better off with the [`libusb` crate](https://crates.io/crates/libusb).
+**Warning:** If you just need to use libusb, you might be better off with [any other `libusb` crate](https://crates.io/search?q=libusb).
 
 This crate exists mainly to provide linkage to [`libusb-compat-0.1`](https://github.com/alexrsagen/libusb-compat-0.1), which is useful for creating Rust bindings to projects which utilize libusb 0.1.
 
