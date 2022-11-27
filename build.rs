@@ -8,6 +8,16 @@ use std::path::PathBuf;
 
 static VERSION: &'static str = "0.1.7";
 
+macro_rules! on_by_feature {
+	($f: literal) => {
+		if cfg!(feature = $f) {
+			"1"
+		} else {
+			"0"
+		}
+	}
+}
+
 fn main() {
 	let usb1_include_dir = PathBuf::from(env::var("DEP_USB_1.0_INCLUDE").expect("libusb1-sys did not export DEP_USB_1.0_INCLUDE"));
 	let vendor_dir = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR var not set")).join("vendor");
@@ -35,6 +45,7 @@ fn main() {
 
 	base_config.define("PRINTF_FORMAT(a, b)", Some(""));
 	base_config.define("ENABLE_LOGGING", Some("1"));
+	base_config.define("ENABLE_DEBUG_LOGGING", on_by_feature!("logging"));
 
 	if std::env::var("CARGO_CFG_TARGET_OS") == Ok("macos".into()) {
 		base_config.define("OS_DARWIN", Some("1"));
