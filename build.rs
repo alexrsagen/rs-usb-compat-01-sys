@@ -44,7 +44,7 @@ fn main() {
 	fs::File::create(&include_dir.join("config.h")).unwrap();
 	let mut base_config = cc::Build::new();
 	base_config.include(&usb1_include_dir);
-	link_objects_recursively(&mut base_config, &usb1_include_dir.parent().unwrap().join("libusb").join("libusb")).unwrap();
+	link_objects_recursively(&mut base_config, &usb1_include_dir.parent().unwrap()).unwrap();
 	base_config.include(&include_dir);
 	base_config.include(&usb01_dir);
 

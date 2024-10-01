@@ -1,6 +1,6 @@
 [package]
 name = "usb-compat-01-sys"
-version = "0.2.5"
+version = "0.2.6"
 description = "Rust bindings for libusb-compat-0.1"
 authors = ["Alexander Sagen <alexander@sagen.me>"]
 repository = "https://github.com/alexrsagen/rs-usb-compat-01-sys"
