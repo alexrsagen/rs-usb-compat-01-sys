@@ -8,16 +8,6 @@ use std::path::PathBuf;
 
 static VERSION: &'static str = "0.1.7";
 
-macro_rules! on_by_feature {
-	($f: literal) => {
-		if cfg!(feature = $f) {
-			"1"
-		} else {
-			"0"
-		}
-	}
-}
-
 fn main() {
 	let usb1_include_dir = PathBuf::from(env::var("DEP_USB_1.0_INCLUDE").expect("libusb1-sys did not export DEP_USB_1.0_INCLUDE"));
 	let vendor_dir = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR var not set")).join("vendor");
@@ -45,15 +35,15 @@ fn main() {
 
 	base_config.define("PRINTF_FORMAT(a, b)", Some(""));
 	base_config.define("ENABLE_LOGGING", Some("1"));
-	base_config.define("ENABLE_DEBUG_LOGGING", on_by_feature!("logging"));
+	if cfg!(feature = "logging") {
+		base_config.define("ENABLE_DEBUG_LOGGING", Some("1"));
+	}
 
-	if std::env::var("CARGO_CFG_TARGET_OS") == Ok("macos".into()) {
+	if cfg!(target_os = "macos") {
 		base_config.define("OS_DARWIN", Some("1"));
 	}
 
-	if std::env::var("CARGO_CFG_TARGET_OS") == Ok("linux".into())
-		|| std::env::var("CARGO_CFG_TARGET_OS") == Ok("android".into())
-	{
+	if cfg!(target_os = "linux") || cfg!(target_os = "android") {
 		base_config.define("OS_LINUX", Some("1"));
 		base_config.define("HAVE_ASM_TYPES_H", Some("1"));
 		base_config.define("_GNU_SOURCE", Some("1"));
@@ -61,7 +51,7 @@ fn main() {
 		base_config.define("HAVE_EVENTFD", Some("1"));
 	}
 
-	if std::env::var("CARGO_CFG_TARGET_FAMILY") == Ok("unix".into()) {
+	if cfg!(target_family = "unix") {
 		base_config.define("HAVE_SYS_TIME_H", Some("1"));
 		base_config.define("HAVE_NFDS_T", Some("1"));
 		base_config.define("PLATFORM_POSIX", Some("1"));
@@ -80,7 +70,7 @@ fn main() {
 		};
 	}
 
-	if std::env::var("CARGO_CFG_TARGET_OS") == Ok("windows".into()) {
+	if cfg!(target_os = "windows") {
 		#[cfg(target_env = "msvc")]
 		base_config.flag("/source-charset:utf-8");
 
@@ -101,12 +91,12 @@ fn main() {
     println!("cargo:static=1");
 	println!("cargo:include={}", include_dir.display());
 	println!("cargo:version_number={}", VERSION);
-	if std::env::var("CARGO_CFG_TARGET_OS") == Ok("macos".into()) {
+	if cfg!(target_os = "macos") {
 		println!("cargo:rustc-link-lib=framework=CoreFoundation");
 		println!("cargo:rustc-link-lib=framework=IOKit");
 		println!("cargo:rustc-link-lib=objc");
 	}
-	if std::env::var("CARGO_CFG_TARGET_FAMILY") == Ok("unix".into()) && pkg_config::probe_library("libudev").is_ok() {
+	if cfg!(target_family = "unix") && pkg_config::probe_library("libudev").is_ok() {
 		println!("cargo:rustc-link-lib=udev");
 	}
 
