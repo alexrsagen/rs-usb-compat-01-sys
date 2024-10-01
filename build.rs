@@ -3,10 +3,25 @@ extern crate bindgen;
 extern crate pkg_config;
 
 use bindgen::Builder;
-use std::{env, fs};
-use std::path::PathBuf;
+use cc::Build;
+use std::{env, fs, io};
+use std::path::{Path, PathBuf};
 
 static VERSION: &'static str = "0.1.7";
+
+fn link_objects_recursively<P: AsRef<Path>>(build: &mut Build, path: P) -> Result<(), io::Error> {
+	for entry in fs::read_dir(path)? {
+		let entry = entry?;
+		let file_type = entry.file_type()?;
+		let entry_path = entry.path();
+		if file_type.is_dir() {
+			link_objects_recursively(build, entry_path)?;
+		} else if file_type.is_file() && entry_path.extension().map(|ext| ext == "o").unwrap_or(false) {
+			build.object(entry_path);
+		}
+	}
+	Ok(())
+}
 
 fn main() {
 	let usb1_include_dir = PathBuf::from(env::var("DEP_USB_1.0_INCLUDE").expect("libusb1-sys did not export DEP_USB_1.0_INCLUDE"));
@@ -29,7 +44,7 @@ fn main() {
 	fs::File::create(&include_dir.join("config.h")).unwrap();
 	let mut base_config = cc::Build::new();
 	base_config.include(&usb1_include_dir);
-	base_config.object(&usb1_include_dir.parent().unwrap().join("libusb.a"));
+	link_objects_recursively(&mut base_config, &usb1_include_dir.parent().unwrap().join("libusb").join("libusb")).unwrap();
 	base_config.include(&include_dir);
 	base_config.include(&usb01_dir);
 
