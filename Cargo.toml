@@ -1,6 +1,6 @@
 [package]
 name = "usb-compat-01-sys"
-version = "0.2.6"
+version = "0.3.0"
 description = "Rust bindings for libusb-compat-0.1"
 authors = ["Alexander Sagen <alexander@sagen.me>"]
 repository = "https://github.com/alexrsagen/rs-usb-compat-01-sys"
@@ -14,11 +14,11 @@ logging = []
 default = []
 
 [dependencies]
-libusb1-sys = { version = "0.5", features = ["vendored"] }
+libusb1-sys = { version = "0.7", features = ["vendored"] }
 
 [build-dependencies]
-cc = "1.0"
-bindgen = "0.65"
+cc = "1.2"
+bindgen = "0.72"
 pkg-config = "0.3"
 
 [lib]
